@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1f">
+<title>Fila da Bomba — Cond. Milton Mendonça</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    --bg:#0a0f1f; --grad1:#101a3a; --grad2:#0a0f1f;
+    --card:#131b33; --card2:#1a2440; --line:#28324f; --line2:#323e60;
+    --txt:#eef2fb; --mut:#93a1c0; --acc:#4f7cff; --acc-d:#3b63e6;
+    --ok:#2fd27a; --okbg:#0f2a1c; --warn:#f5b23d; --danger:#f2555a;
+    --gold:#f5c542; --brand1:#5b8bff; --brand2:#8a5cff; --aqua:#22d3ee;
+    --shadow:0 10px 34px rgba(0,0,0,.4); --shadow-sm:0 4px 14px rgba(0,0,0,.25);
+    --r:18px;
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --bg:#eef2f9; --grad1:#e5ecff; --grad2:#eef2f9;
+      --card:#ffffff; --card2:#f3f6fc; --line:#e4eaf3; --line2:#d8e0ee;
+      --txt:#0e1a33; --mut:#5a6a86; --okbg:#e6f8ee;
+      --shadow:0 10px 30px rgba(31,53,110,.12); --shadow-sm:0 4px 14px rgba(31,53,110,.08);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0a0f1f; --grad1:#101a3a; --card:#131b33; --card2:#1a2440; --line:#28324f;
+    --txt:#eef2fb; --mut:#93a1c0; --okbg:#0f2a1c; --shadow:0 10px 34px rgba(0,0,0,.4);
+  }
+  *{box-sizing:inherit}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 420px at 85% -5%, rgba(138,92,255,.18), transparent 60%),
+      radial-gradient(1000px 460px at 10% 0%, rgba(79,124,255,.20), transparent 62%),
+      var(--bg);
+    color:var(--txt); font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    line-height:1.45; -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  .wrap{max-width:600px; margin:0 auto; padding:18px 15px 60px}
+
+  /* ---------- Header ---------- */
+  .top{display:flex; align-items:center; gap:13px; margin-bottom:18px}
+  .logo{width:50px; height:50px; flex:0 0 50px; border-radius:15px; position:relative;
+    background:linear-gradient(140deg,var(--brand1),var(--brand2));
+    display:flex; align-items:center; justify-content:center; font-size:1.5rem;
+    box-shadow:0 8px 22px rgba(91,139,255,.45); overflow:hidden}
+  .logo::after{content:""; position:absolute; inset:0; background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%);
+    transform:translateX(-120%); animation:shine 4.5s ease-in-out infinite}
+  @keyframes shine{0%,70%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
+  .top h1{font-size:1.15rem; margin:0; font-weight:800; letter-spacing:-.3px}
+  .top .sub{color:var(--mut); font-size:.8rem; margin:2px 0 0}
+  .role-pill{margin-left:auto; font-size:.66rem; font-weight:800; padding:6px 11px; border-radius:20px;
+    background:var(--card2); color:var(--mut); border:1px solid var(--line); white-space:nowrap; cursor:pointer; transition:.2s}
+  .role-pill.admin{background:linear-gradient(140deg,var(--brand1),var(--brand2)); color:#fff; border:none; box-shadow:0 4px 14px rgba(91,139,255,.4)}
+
+  /* ---------- Tabs ---------- */
+  .tabs{display:flex; gap:5px; background:var(--card2); border:1px solid var(--line); padding:5px; border-radius:15px; margin-bottom:18px; position:relative}
+  .tab{flex:1; text-align:center; padding:11px 8px; border-radius:11px; font-weight:700; font-size:.88rem;
+    color:var(--mut); cursor:pointer; border:none; background:transparent; transition:.22s; z-index:1; display:flex; align-items:center; justify-content:center; gap:6px}
+  .tab.active{color:#fff}
+  .tab-ind{position:absolute; top:5px; bottom:5px; border-radius:11px; background:linear-gradient(140deg,var(--brand1),var(--acc-d));
+    box-shadow:var(--shadow-sm); transition:transform .28s cubic-bezier(.4,1.3,.5,1), width .28s; z-index:0}
+  :root:not([data-theme="dark"]) .tab.active{color:#fff}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:16px; margin-bottom:14px; box-shadow:var(--shadow)}
+  .sec-title{font-size:.7rem; text-transform:uppercase; letter-spacing:1.4px; color:var(--mut); margin:0 0 13px; font-weight:800; display:flex; align-items:center; gap:7px}
+
+  /* ---------- Now hero ---------- */
+  .now{position:relative; overflow:hidden; border:none; padding:20px 18px;
+    background:linear-gradient(140deg,#0e4d33,#0a6b48 55%,#0e7a52); color:#eafff3}
+  :root:not([data-theme="dark"]) .now{background:linear-gradient(140deg,#c9f5dc,#a6ecc6); color:#053b22}
+  .now.empty{background:linear-gradient(140deg,var(--card2),var(--card)); color:var(--mut)}
+  .now .waves{position:absolute; left:0; right:0; bottom:0; height:60px; opacity:.25}
+  .now .drop{position:absolute; right:-6px; top:-16px; font-size:5.5rem; opacity:.16; animation:bob 3.5s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+  .live{display:inline-flex; align-items:center; gap:6px; font-size:.64rem; font-weight:800; letter-spacing:1.2px;
+    text-transform:uppercase; opacity:.9; margin-bottom:8px}
+  .live .dot{width:8px; height:8px; border-radius:50%; background:#7dffb8; box-shadow:0 0 0 0 rgba(125,255,184,.7); animation:ring 1.8s infinite}
+  .now.empty .live .dot{background:var(--mut); animation:none; box-shadow:none}
+  @keyframes ring{0%{box-shadow:0 0 0 0 rgba(125,255,184,.6)}70%{box-shadow:0 0 0 10px rgba(125,255,184,0)}100%{box-shadow:0 0 0 0 rgba(125,255,184,0)}}
+  .now .house{font-size:2rem; font-weight:900; margin:0; letter-spacing:-.6px; line-height:1.1}
+  .now .meta{font-size:.82rem; opacity:.92; margin-top:7px; display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+  .chip{display:inline-block; background:rgba(255,255,255,.18); padding:3px 9px; border-radius:20px; font-size:.72rem; font-weight:600}
+  :root:not([data-theme="dark"]) .now .chip{background:rgba(5,59,34,.12)}
+
+  /* ---------- Buttons ---------- */
+  .btn{width:100%; padding:15px; border:none; border-radius:14px; font-weight:800; font-size:.97rem;
+    background:linear-gradient(140deg,var(--brand1),var(--acc-d)); color:#fff; cursor:pointer;
+    transition:transform .12s, box-shadow .2s, filter .2s; font-family:inherit; box-shadow:0 6px 18px rgba(79,124,255,.35);
+    display:flex; align-items:center; justify-content:center; gap:8px}
+  .btn:active{transform:scale(.97)}
+  .btn:disabled{opacity:.45; cursor:not-allowed; box-shadow:none}
+  .btn.big{padding:17px; font-size:1.02rem}
+  .btn.pass{background:linear-gradient(140deg,#ffb545,#ef9422); color:#3a2600; box-shadow:0 6px 18px rgba(245,150,42,.4)}
+  .btn.wa{background:linear-gradient(140deg,#25d366,#12b352); color:#04321c; box-shadow:0 6px 18px rgba(37,211,102,.35)}
+  .btn.ghost{background:transparent; border:1.5px solid var(--line2); color:var(--txt); box-shadow:none}
+  .btn.ghost:active{background:var(--card2)}
+  .btn + .btn{margin-top:10px}
+
+  /* ---------- Form ---------- */
+  label.fld{display:block; font-size:.72rem; color:var(--mut); font-weight:700; margin:0 0 7px 3px; text-transform:uppercase; letter-spacing:.5px}
+  select,input[type=password],input[type=text]{width:100%; padding:14px; border-radius:13px; border:1.5px solid var(--line);
+    background:var(--card2); color:var(--txt); font-size:1rem; font-family:inherit; transition:border-color .2s, box-shadow .2s}
+  select:focus,input:focus{outline:none; border-color:var(--acc); box-shadow:0 0 0 4px rgba(79,124,255,.15)}
+  select{appearance:none; margin-bottom:14px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2393a1c0' stroke-width='2.2'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat; background-position:right 14px center}
+  .urg-toggle{display:flex; align-items:center; gap:12px; padding:13px 14px; border-radius:13px; border:1.5px solid var(--line);
+    background:var(--card2); margin-bottom:14px; cursor:pointer; transition:.2s; user-select:none}
+  .urg-toggle.on{border-color:var(--danger); background:rgba(242,85,90,.1)}
+  .urg-toggle .sw{width:46px; height:27px; flex:0 0 46px; border-radius:20px; background:var(--line2); position:relative; transition:.25s}
+  .urg-toggle.on .sw{background:var(--danger)}
+  .urg-toggle .sw::after{content:""; position:absolute; top:3px; left:3px; width:21px; height:21px; border-radius:50%; background:#fff; transition:.25s cubic-bezier(.4,1.4,.5,1)}
+  .urg-toggle.on .sw::after{transform:translateX(19px)}
+  .urg-toggle .lbl{flex:1}
+  .urg-toggle .lbl b{display:block; font-size:.9rem}
+  .urg-toggle .lbl small{color:var(--mut); font-size:.74rem}
+
+  /* ---------- Queue ---------- */
+  .q-item{display:flex; align-items:center; gap:13px; padding:13px 6px; border-bottom:1px solid var(--line); animation:slidein .35s ease}
+  @keyframes slidein{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:none}}
+  .q-item:last-child{border-bottom:none}
+  .pos{width:34px; height:34px; flex:0 0 34px; border-radius:11px; background:var(--card2); color:var(--mut);
+    display:flex; align-items:center; justify-content:center; font-size:.9rem; font-weight:900}
+  .q-item.head .pos{background:linear-gradient(140deg,var(--gold),#e0a92e); color:#3a2f00; box-shadow:0 4px 12px rgba(245,197,66,.4)}
+  .q-item.urg .pos{background:linear-gradient(140deg,var(--danger),#c9343a); color:#fff; box-shadow:0 4px 12px rgba(242,85,90,.4)}
+  .q-house{font-weight:700; flex:1; min-width:0}
+  .q-house small{display:block; color:var(--mut); font-weight:400; font-size:.72rem; margin-top:2px}
+  .q-item.head .q-house::after{content:"PRÓXIMO"; font-size:.58rem; font-weight:800; color:var(--gold); letter-spacing:.6px; margin-left:6px; vertical-align:middle}
+  .q-empty{color:var(--mut); text-align:center; padding:30px 0; font-size:.9rem}
+  .q-empty .em{font-size:2rem; display:block; margin-bottom:6px; opacity:.5}
+  .badge-urg{display:inline-block; background:var(--danger); color:#fff; font-size:.58rem; font-weight:800; padding:2px 7px; border-radius:6px; margin-left:7px; vertical-align:middle; letter-spacing:.4px}
+  .del{background:none; border:none; color:var(--mut); cursor:pointer; font-size:1.05rem; padding:5px 7px; border-radius:9px; transition:.15s}
+  .del:hover{color:var(--danger); background:rgba(242,85,90,.12)}
+  .qadmin{display:flex; align-items:center; gap:3px}
+  .mv{background:var(--card2); border:1px solid var(--line); color:var(--mut); cursor:pointer; font-size:.72rem; width:29px; height:29px; border-radius:9px; padding:0; transition:.15s}
+  .mv:hover:not(:disabled){color:var(--acc); border-color:var(--acc); background:rgba(79,124,255,.1)}
+  .mv:disabled{opacity:.3; cursor:not-allowed}
+
+  /* ---------- Banners / toasts ---------- */
+  .banner{background:var(--okbg); border:1px solid var(--ok); color:var(--ok); padding:13px 15px; border-radius:13px; font-size:.86rem; margin-bottom:14px; display:flex; gap:10px; align-items:flex-start; animation:pop .3s ease; box-shadow:var(--shadow-sm)}
+  @keyframes pop{from{opacity:0; transform:translateY(-8px) scale(.98)}to{opacity:1; transform:none}}
+  .banner.info{background:rgba(79,124,255,.12); border-color:var(--acc); color:var(--acc)}
+  .banner.warn{background:rgba(245,178,61,.12); border-color:var(--warn); color:var(--warn)}
+  .banner .x{margin-left:auto; cursor:pointer; opacity:.6; font-weight:800}
+  .banner u{cursor:pointer; font-weight:700}
+
+  /* ---------- Stats / records ---------- */
+  .stat-row{display:flex; gap:10px; margin-bottom:14px}
+  .stat{flex:1; background:var(--card); border:1px solid var(--line); border-radius:15px; padding:15px 10px; text-align:center; box-shadow:var(--shadow-sm)}
+  .stat .n{font-size:1.6rem; font-weight:900; letter-spacing:-.5px; background:linear-gradient(140deg,var(--brand1),var(--brand2)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+  .stat .l{font-size:.62rem; color:var(--mut); text-transform:uppercase; letter-spacing:.8px; margin-top:3px; font-weight:700}
+  .rank-item{display:flex; align-items:center; gap:11px; padding:9px 2px}
+  .rank-house{flex:0 0 118px; font-size:.82rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .rank-bar{flex:1; height:10px; background:var(--card2); border-radius:6px; overflow:hidden}
+  .rank-fill{height:100%; background:linear-gradient(90deg,var(--warn),var(--danger)); border-radius:6px; transition:width .6s cubic-bezier(.4,1,.4,1)}
+  .rank-n{flex:0 0 auto; font-size:.82rem; font-weight:900; color:var(--danger); min-width:32px; text-align:right}
+  .log-item{display:flex; gap:11px; align-items:flex-start; font-size:.82rem; padding:12px 4px; border-bottom:1px solid var(--line)}
+  .log-item:last-child{border-bottom:none}
+  .log-ic{flex:0 0 auto; font-size:1.05rem; line-height:1.3}
+  .log-tx{flex:1; min-width:0}
+  .log-tx .t{color:var(--txt); font-weight:500}
+  .log-tx .d{color:var(--mut); font-size:.72rem; margin-top:2px}
+  .search{margin-bottom:12px}
+
+  .hide{display:none !important}
+  .foot{color:var(--mut); font-size:.72rem; text-align:center; margin-top:22px; line-height:1.7}
+  .ro-note{font-size:.78rem; color:var(--mut); margin-top:11px; text-align:center; line-height:1.5}
+  #setupWarn{background:#3a1114; border:1px solid var(--danger); color:#ffb4b6; padding:15px; border-radius:14px; margin-bottom:14px; font-size:.85rem; line-height:1.55}
+  .notif-card{background:linear-gradient(140deg,rgba(91,139,255,.14),rgba(138,92,255,.14)); border:1px solid var(--line2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">🚰</div>
+    <div>
+      <h1>Fila da Bomba</h1>
+      <p class="sub">Condomínio Milton Mendonça</p>
+    </div>
+    <div class="role-pill" id="rolePill">👤 Morador</div>
+  </div>
+
+  <div id="setupWarn" class="hide"></div>
+
+  <div class="tabs" id="tabs">
+    <span class="tab-ind" id="tabInd"></span>
+    <button class="tab active" data-tab="fila">💧 Fila</button>
+    <button class="tab" data-tab="registros">📊 Registros</button>
+  </div>
+
+  <div id="alertSlot"></div>
+
+  <div id="tab-fila">
+    <div class="card now empty" id="nowCard">
+      <div class="drop">💧</div>
+      <div class="live"><span class="dot"></span><span id="liveTxt">Bomba livre</span></div>
+      <p class="house" id="nowHouse">— ninguém —</p>
+      <p class="meta" id="nowMeta">Ninguém está usando. Seja o próximo!</p>
+    </div>
+
+    <div id="publicControl"></div>
+
+    <div class="card">
+      <p class="sec-title">➕ Entrar na fila</p>
+      <label class="fld">Selecione a casa</label>
+      <select id="houseSel" aria-label="Selecione a casa"></select>
+      <div class="urg-toggle" id="urgToggle">
+        <div class="sw"></div>
+        <div class="lbl"><b>⚠️ Urgente — sem água</b><small>Passa na frente na fila</small></div>
+        <input type="checkbox" id="urgChk" class="hide">
+      </div>
+      <button class="btn big" id="joinBtn">Entrar na fila</button>
+      <button class="btn wa" id="waBtn">📲 Avisar no grupo do WhatsApp</button>
+    </div>
+
+    <div class="card">
+      <p class="sec-title">📋 Fila de espera <span id="qCount" style="margin-left:auto; color:var(--mut); font-weight:700"></span></p>
+      <div id="queueList"><div class="q-empty">Carregando…</div></div>
+    </div>
+
+    <div class="card" id="adminCard">
+      <p class="sec-title">🔑 Painel do Síndico</p>
+      <div id="adminLocked">
+        <label class="fld">Senha do síndico para reordenar a fila</label>
+        <input type="password" id="pwInput" placeholder="••••••••" autocomplete="off">
+        <button class="btn ghost" id="pwBtn" style="margin-top:11px">🔓 Desbloquear painel</button>
+      </div>
+      <div id="adminUnlocked" class="hide">
+        <p class="ro-note" style="margin:0 0 4px">✅ Modo síndico ativo. Use ▲▼ para reordenar e ✕ para remover.</p>
+        <button class="btn ghost" id="lockBtn" style="margin-top:12px">🔒 Sair do modo síndico</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-registros" class="hide">
+    <div class="stat-row">
+      <div class="stat"><div class="n" id="stTotal">0</div><div class="l">Registros</div></div>
+      <div class="stat"><div class="n" id="stFila">0</div><div class="l">Na fila</div></div>
+      <div class="stat"><div class="n" id="stUrg">0</div><div class="l">Urgências</div></div>
+    </div>
+    <div class="card">
+      <p class="sec-title">🔥 Urgências por casa</p>
+      <div id="urgRank"><div class="q-empty"><span class="em">🎉</span>Nenhuma urgência registrada.</div></div>
+    </div>
+    <div class="card">
+      <p class="sec-title">📜 Histórico de atividades</p>
+      <input type="text" class="search" id="logSearch" placeholder="🔍 Buscar por casa ou ação…">
+      <div id="logList"><div class="q-empty"><span class="em">📭</span>Sem registros ainda.</div></div>
+    </div>
+  </div>
+
+  <p class="foot">
+    Sincronizado em tempo real entre todos os moradores<br>
+    Casas urgentes têm prioridade · Uso recomendado das 08:00 às 22:00
+  </p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA_Z7O4haMwSOzQCjO8aBRDmGHjCd60Wek",
+  authDomain: "fila-bomba.firebaseapp.com",
+  projectId: "fila-bomba",
+  storageBucket: "fila-bomba.firebasestorage.app",
+  messagingSenderId: "436247317738",
+  appId: "1:436247317738:web:7b88700f1db6cb1f4c9b93",
+  measurementId: "G-90NBT9EBZ2"
+};
+const SINDICO_PW = "Milton2026";
+
+/* ==========================================================================
+   Fila da Bomba — Cond. Milton Mendonça  (Firebase + FCM push)
+   Firestore:
+     fila/estado          { current, queue[], log[], urgCount{} }
+     tokens/{token}       { house, ts }   ← 1 por dispositivo, com a casa dele
+   ========================================================================== */
+
+const HOUSES=["Casa 174","Casa 174 sobrado","Casa 1","Casa 2","Casa 3","Casa 4","Casa 5","Casa 6","Casa 7","Casa 8","Casa 9","Casa 10"];
+const MAX_LOG=80;
+const LS_HOUSE="fb_my_house";
+
+let db=null;
+let stateDoc={current:null,queue:[],log:[],urgCount:{}};
+let isAdmin=false, lastSeenCurrentTs=null, ready=false, notifStarted=false;
+
+const $=s=>document.querySelector(s);
+const nowCard=$("#nowCard"),nowHouse=$("#nowHouse"),nowMeta=$("#nowMeta"),liveTxt=$("#liveTxt");
+const queueList=$("#queueList"),logList=$("#logList"),publicControl=$("#publicControl");
+const joinBtn=$("#joinBtn"),houseSel=$("#houseSel"),alertSlot=$("#alertSlot");
+const urgChk=$("#urgChk"),urgToggle=$("#urgToggle"),waBtn=$("#waBtn"),rolePill=$("#rolePill");
+const adminLocked=$("#adminLocked"),adminUnlocked=$("#adminUnlocked"),qCount=$("#qCount");
+
+HOUSES.forEach(h=>{houseSel.appendChild(new Option(h,h));});
+const savedHouse=localStorage.getItem(LS_HOUSE);
+if(savedHouse){houseSel.value=savedHouse;}
+
+/* ---------- Tabs com indicador deslizante ---------- */
+const tabInd=$("#tabInd");
+function moveTabIndicator(){
+  const active=document.querySelector(".tab.active");
+  if(!active)return;
+  tabInd.style.width=active.offsetWidth+"px";
+  tabInd.style.transform=`translateX(${active.offsetLeft-5}px)`;
+}
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");moveTabIndicator();
+    const tab=t.dataset.tab;
+    $("#tab-fila").classList.toggle("hide",tab!=="fila");
+    $("#tab-registros").classList.toggle("hide",tab!=="registros");
+  };
+});
+window.addEventListener("resize",moveTabIndicator);
+setTimeout(moveTabIndicator,60);
+
+/* ---------- Toggle urgente ---------- */
+urgToggle.onclick=()=>{urgChk.checked=!urgChk.checked;urgToggle.classList.toggle("on",urgChk.checked);};
+
+/* ---------- Helpers ---------- */
+function isRestrictedHour(){const h=new Date().getHours();return(h<8||h>=22);}
+function waSend(text){window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank");}
+function fmtTime(ts){if(!ts)return"";return new Date(ts).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});}
+function ago(ts){
+  if(!ts)return"";let s=Math.floor((Date.now()-ts)/1000);
+  if(s<60)return"agora há pouco";let m=Math.floor(s/60);if(m<60)return`há ${m} min`;
+  let h=Math.floor(m/60);if(h<24)return`há ${h}h${(m%60).toString().padStart(2,"0")}`;
+  let d=Math.floor(h/24);return`há ${d} dia${d>1?"s":""}`;
+}
+function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent);}
+function isStandalone(){return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true;}
+function buzz(ms){if(navigator.vibrate)try{navigator.vibrate(ms);}catch(e){}}
+
+/* ---------- Render ---------- */
+function render(){
+  const cur=stateDoc.current;
+  if(cur){
+    nowCard.classList.remove("empty");
+    liveTxt.textContent="Bomba ligada · ao vivo";
+    nowHouse.textContent=cur.house;
+    nowMeta.innerHTML=`<span class="chip">⏱️ ${ago(cur.since)}</span><span class="chip">desde ${fmtTime(cur.since)}</span>`;
+  }else{
+    nowCard.classList.add("empty");
+    liveTxt.textContent="Bomba livre";
+    nowHouse.textContent="— ninguém —";
+    nowMeta.textContent="Ninguém está usando. Seja o próximo!";
+  }
+
+  const q=stateDoc.queue||[];
+  qCount.textContent=q.length?`${q.length} na fila`:"";
+  if(!q.length){queueList.innerHTML='<div class="q-empty"><span class="em">🫧</span>Fila vazia. Ninguém aguardando.</div>';}
+  else{
+    queueList.innerHTML="";
+    q.forEach((item,i)=>{
+      const row=document.createElement("div");
+      row.className="q-item"+(i===0?" head":"")+(item.urgent?" urg":"");
+      const badge=item.urgent?'<span class="badge-urg">URGENTE</span>':"";
+      let admin="";
+      if(isAdmin){admin=`<div class="qadmin">
+        <button class="mv" data-up="${i}" title="Subir" ${i===0?"disabled":""}>▲</button>
+        <button class="mv" data-dn="${i}" title="Descer" ${i===q.length-1?"disabled":""}>▼</button>
+        <button class="del" data-i="${i}" title="Remover">✕</button></div>`;}
+      row.innerHTML=`<div class="pos">${i+1}</div>
+        <div class="q-house">${item.house}${badge}<small>entrou ${ago(item.addedAt)} · ${fmtTime(item.addedAt)}</small></div>${admin}`;
+      queueList.appendChild(row);
+    });
+    if(isAdmin){
+      queueList.querySelectorAll(".del").forEach(b=>b.onclick=()=>removeFromQueue(+b.dataset.i));
+      queueList.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>moveInQueue(+b.dataset.up,-1));
+      queueList.querySelectorAll("[data-dn]").forEach(b=>b.onclick=()=>moveInQueue(+b.dataset.dn,1));
+    }
+  }
+  renderRecords();renderPublicControl();
+}
+
+function renderRecords(){
+  const log=stateDoc.log||[];
+  $("#stTotal").textContent=log.length;
+  $("#stFila").textContent=(stateDoc.queue||[]).length;
+  const uc=stateDoc.urgCount||{};
+  $("#stUrg").textContent=Object.values(uc).reduce((a,b)=>a+b,0);
+  const rank=$("#urgRank");
+  const entries=Object.entries(uc).filter(([,n])=>n>0).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){rank.innerHTML='<div class="q-empty"><span class="em">🎉</span>Nenhuma urgência registrada.</div>';}
+  else{
+    const max=entries[0][1];rank.innerHTML="";
+    entries.forEach(([house,n])=>{
+      const pct=Math.round((n/max)*100);
+      const d=document.createElement("div");d.className="rank-item";
+      d.innerHTML=`<div class="rank-house">${house}</div><div class="rank-bar"><div class="rank-fill" style="width:${pct}%"></div></div><div class="rank-n">${n}×</div>`;
+      rank.appendChild(d);
+    });
+  }
+  const term=($("#logSearch").value||"").toLowerCase();
+  const filtered=term?log.filter(l=>l.text.toLowerCase().includes(term)):log;
+  if(!filtered.length){logList.innerHTML='<div class="q-empty"><span class="em">🔍</span>'+(term?"Nada encontrado.":"Sem registros ainda.")+'</div>';return;}
+  logList.innerHTML="";
+  filtered.forEach(l=>{
+    const ic=l.text.slice(0,2);
+    const tx=/\p{Emoji}/u.test(ic)?l.text.slice(2).trim():l.text;
+    const icon=/\p{Emoji}/u.test(ic)?ic:"•";
+    const d=document.createElement("div");d.className="log-item";
+    d.innerHTML=`<div class="log-ic">${icon}</div><div class="log-tx"><div class="t">${tx}</div><div class="d">${fmtTime(l.at)} · ${ago(l.at)}</div></div>`;
+    logList.appendChild(d);
+  });
+}
+$("#logSearch").addEventListener("input",renderRecords);
+
+function renderPublicControl(){
+  publicControl.innerHTML="";
+  const cur=stateDoc.current;if(!cur)return;
+  const hasNext=stateDoc.queue&&stateDoc.queue.length;
+  const card=document.createElement("div");card.className="card";card.style.marginTop="-2px";
+  const btn=document.createElement("button");btn.className="btn pass big";
+  btn.textContent=hasNext?`✅ Encheu! Passar p/ ${stateDoc.queue[0].house}`:"⏹️ Encheu! Desligar bomba";
+  btn.onclick=()=>{buzz(30);passPump();};card.appendChild(btn);
+  const hint=document.createElement("p");hint.className="ro-note";hint.style.marginBottom="0";
+  hint.textContent=hasNext?"Quando sua caixa encher, toque para liberar ao próximo.":"Quando sua caixa encher, toque para desligar.";
+  card.appendChild(hint);publicControl.appendChild(card);
+}
+
+/* ---------- Firestore ---------- */
+async function saveState(next){
+  if(!db){flash("Sem conexão com o Firebase.","warn");return false;}
+  try{await db.collection("fila").doc("estado").set(next);return true;}
+  catch(e){console.error(e);flash("Erro ao salvar. Confira as regras do Firestore.","warn");return false;}
+}
+function pushLog(state,text){state.log=[{at:Date.now(),text},...(state.log||[])].slice(0,MAX_LOG);}
+function insertByPriority(queue,item){
+  if(!item.urgent){queue.push(item);return queue.length;}
+  let idx=queue.findIndex(q=>!q.urgent);
+  if(idx===-1){queue.push(item);return queue.length;}
+  queue.splice(idx,0,item);return idx+1;
+}
+
+async function joinQueue(){
+  if(!ready)return;
+  const house=houseSel.value,urgent=urgChk.checked;
+  if(isRestrictedHour()){
+    if(!confirm("⏰ Fora do horário recomendado (antes das 08:00 ou depois das 22:00).\n\nEvite usar a bomba nesse período por causa do barulho. Continuar mesmo assim?"))return;
+  }
+  const s=JSON.parse(JSON.stringify(stateDoc));
+  s.queue=s.queue||[];s.log=s.log||[];s.urgCount=s.urgCount||{};
+  const tag=urgent?" ⚠️ (URGENTE - sem água)":"";
+  const hourTag=isRestrictedHour()?" 🌙 (fora de horário)":"";
+  if(urgent)s.urgCount[house]=(s.urgCount[house]||0)+1;
+  if(!s.current&&s.queue.length===0){
+    s.current={house,since:Date.now(),urgent};
+    pushLog(s,`🚰 ${house} ligou a bomba${tag}${hourTag}`);
+  }else{
+    if(s.current&&s.current.house===house){flash("Essa casa já está com a bomba ligada.","info");return;}
+    if(s.queue.some(q=>q.house===house)){flash(`${house} já está na fila.`,"info");return;}
+    const pos=insertByPriority(s.queue,{house,addedAt:Date.now(),urgent});
+    pushLog(s,`➕ ${house} entrou na fila (posição ${pos})${tag}${hourTag}`);
+  }
+  if(await saveState(s)){
+    buzz(30);
+    flash(`✅ ${house} registrada${urgent?" como URGENTE":""}.`);
+    urgChk.checked=false;urgToggle.classList.remove("on");
+  }
+}
+
+async function passPump(){
+  const s=JSON.parse(JSON.stringify(stateDoc));
+  s.queue=s.queue||[];s.log=s.log||[];
+  const leaving=s.current?s.current.house:null;
+  if(s.queue.length>0){
+    const nx=s.queue.shift();
+    s.current={house:nx.house,since:Date.now(),urgent:!!nx.urgent};
+    pushLog(s,`🔄 Bomba passou de ${leaving||"—"} → ${nx.house}`);flash(`Bomba passada para ${nx.house}.`);
+  }else{s.current=null;pushLog(s,`⏹️ ${leaving||"—"} desligou a bomba`);flash("Bomba desligada.");}
+  await saveState(s);
+}
+async function removeFromQueue(i){
+  const s=JSON.parse(JSON.stringify(stateDoc));
+  if(!s.queue||!s.queue[i])return;
+  const r=s.queue[i];if(!confirm(`Remover ${r.house} da fila?`))return;
+  s.queue.splice(i,1);pushLog(s,`🗑️ Síndico removeu ${r.house} da fila`);
+  if(await saveState(s))flash(`${r.house} removida da fila.`);
+}
+async function moveInQueue(i,dir){
+  const s=JSON.parse(JSON.stringify(stateDoc));const q=s.queue||[];const j=i+dir;
+  if(j<0||j>=q.length)return;
+  const moved=q[i];[q[i],q[j]]=[q[j],q[i]];
+  pushLog(s,`↕️ Síndico moveu ${moved.house} para a posição ${j+1}`);
+  if(await saveState(s)){buzz(20);flash(`${moved.house} → posição ${j+1}.`);}
+}
+
+/* ---------- Síndico ---------- */
+function unlockAdmin(){
+  if($("#pwInput").value===SINDICO_PW){
+    isAdmin=true;adminLocked.classList.add("hide");adminUnlocked.classList.remove("hide");
+    rolePill.textContent="👑 Síndico";rolePill.classList.add("admin");$("#pwInput").value="";
+    buzz(30);flash("👑 Painel do síndico desbloqueado.");render();
+  }else{buzz([20,40,20]);flash("Senha incorreta.","warn");}
+}
+function lockAdmin(){
+  isAdmin=false;adminUnlocked.classList.add("hide");adminLocked.classList.remove("hide");
+  rolePill.textContent="👤 Morador";rolePill.classList.remove("admin");render();
+}
+
+/* ---------- Banners + notificação ---------- */
+function flash(msg,type){
+  const b=document.createElement("div");
+  b.className="banner"+(type==="info"?" info":type==="warn"?" warn":"");
+  const ic=type==="info"?"ℹ️":type==="warn"?"⚠️":"✅";
+  b.innerHTML=`<span>${ic}</span><span>${msg}</span><span class="x">✕</span>`;
+  b.querySelector(".x").onclick=()=>b.remove();
+  alertSlot.innerHTML="";alertSlot.appendChild(b);
+  if(type!=="info")setTimeout(()=>{if(b.parentNode)b.remove();},6000);
+}
+function checkYourTurn(){
+  const cur=stateDoc.current;
+  if(!cur){lastSeenCurrentTs=null;return;}
+  if(cur.since!==lastSeenCurrentTs){
+    const changed=lastSeenCurrentTs!==null;
+    lastSeenCurrentTs=cur.since;
+    if(changed){
+      buzz(60);
+      const mine=localStorage.getItem(LS_HOUSE);
+      if(mine && mine===cur.house) tryNotify("🚰 É a sua vez!","A bomba foi liberada para a "+cur.house+".");
+      else tryNotify("🚰 Bomba ligada para "+cur.house,"A bomba do condomínio mudou de casa.");
+    }
+    const mine=localStorage.getItem(LS_HOUSE);
+    const yours=mine&&mine===cur.house;
+    const b=document.createElement("div");b.className="banner"+(yours?"":" info");
+    b.innerHTML=`<span>🚰</span><span><b>${yours?"É a sua vez! ":""}Bomba agora na ${cur.house}</b> — ${ago(cur.since)}. <u id="waTurn">Avisar no grupo</u></span><span class="x">✕</span>`;
+    b.querySelector(".x").onclick=()=>b.remove();
+    b.querySelector("#waTurn").onclick=()=>waSend(`🚰 Fila da Bomba (Cond. Milton Mendonça)\nA bomba passou para: ${cur.house}`);
+    alertSlot.innerHTML="";alertSlot.appendChild(b);
+  }
+}
+function tryNotify(t,body){if(!("Notification"in window))return;if(Notification.permission==="granted"){try{new Notification(t,{body});}catch(e){}}}
+
+setInterval(()=>{if(ready)render();},30000);
+
+/* ---------- Boot ---------- */
+$("#pwBtn").onclick=unlockAdmin;
+$("#pwInput").addEventListener("keydown",e=>{if(e.key==="Enter")unlockAdmin();});
+$("#lockBtn").onclick=lockAdmin;
+joinBtn.onclick=()=>{buzz(20);joinQueue();};
+waBtn.onclick=()=>{
+  const cur=stateDoc.current;let msg;
+  if(cur){msg=`🚰 Fila da Bomba (Cond. Milton Mendonça)\nBomba ligada agora para: ${cur.house}`;}
+  else{msg=`🚰 Fila da Bomba (Cond. Milton Mendonça)\nA bomba está livre no momento.`;}
+  const q=stateDoc.queue||[];if(q.length){msg+=`\nPróximo na fila: ${q[0].house}${q[0].urgent?" ⚠️ URGENTE":""}`;}
+  waSend(msg);
+};
+
+(function boot(){
+  const notSet=!firebaseConfig||String(firebaseConfig.apiKey).includes("COLE");
+  if(notSet){
+    $("#setupWarn").classList.remove("hide");
+    $("#setupWarn").innerHTML="⚠️ Configure as chaves em <code>firebase-config.js</code>.";
+    joinBtn.disabled=true;return;
+  }
+  firebase.initializeApp(firebaseConfig);
+  db=firebase.firestore();
+
+  db.collection("fila").doc("estado").onSnapshot(snap=>{
+    stateDoc=snap.exists?snap.data():{current:null,queue:[],log:[],urgCount:{}};
+    ready=true;render();checkYourTurn();
+  },err=>{
+    console.error(err);
+    $("#setupWarn").classList.remove("hide");
+    $("#setupWarn").innerHTML="⚠️ Erro ao conectar ao Firestore. Ative o <b>Firestore Database</b> e ajuste as <b>Regras</b> no console.";
+    queueList.innerHTML='<div class="q-empty">Sem conexão com o banco.</div>';
+  });
+
+})();
+
+</script>
+</body>
+</html>
